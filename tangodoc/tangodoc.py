@@ -2,9 +2,11 @@
 from a HLAPI Tango Device class."""
 
 # Imports
+from sphinx.application import Sphinx
 from sphinx.ext.autodoc import ClassDocumenter, AttributeDocumenter 
 from sphinx.ext.autodoc import ClassLevelDocumenter
 from collections import defaultdict
+
 
 # Mock
 class BaseMock(object):
@@ -54,13 +56,14 @@ class Device(object):
 
 
 # Monkey patching
-from types import MethodType
-from PyTango import server
-server.attribute = attribute
-server.command = command
-server.device_property = device_property
-server.Device = Device
-server.DeviceMeta = DeviceMeta
+def pytango_patch():
+    from types import MethodType
+    from PyTango import server
+    server.attribute = attribute
+    server.command = command
+    server.device_property = device_property
+    server.Device = Device
+    server.DeviceMeta = DeviceMeta
 
 
 # Tango device documenter
@@ -68,6 +71,7 @@ class TangoDeviceDocumenter(ClassDocumenter):
     """ Documenter for tango device classes."""
     objtype = 'tangodevice'
     directivetype = 'class'
+    section = "{0} Device Documentation"
     valid_types = (attribute, device_property, command)
     priority = ClassDocumenter.priority
     priority += 1
@@ -75,6 +79,23 @@ class TangoDeviceDocumenter(ClassDocumenter):
     @classmethod
     def can_document_member(cls, member, membername, isattr, parent):
         return isinstance(member, DeviceMeta)
+
+    def generate(self, more_content=None, real_modname=None,
+                 check_module=False, all_members=False):
+        """Patch to add a header."""
+        # Get object
+        if not self.parse_name() or not self.import_object():
+            return
+        # Add header
+        if all_members:
+            self.indent, temp = '', self.indent
+            section = self.section.format(self.object.__name__)
+            self.add_line(section, '<autodoc>')
+            self.add_line("*" * len(section), '<autodoc>')
+            self.indent = temp
+        # Generate documentation
+        ClassDocumenter.generate(self, more_content, real_modname,
+                                      check_module, all_members)
 
     def filter_members(self, members, want_all):
         """Filter to keep only objects of valid types."""
@@ -91,7 +112,7 @@ class TangoDeviceDocumenter(ClassDocumenter):
         ClassDocumenter.document_members(self, all_members)
 
 
-
+# Tango base documenter
 class BaseTangoDocumenter(ClassLevelDocumenter):
     """Base class for documenting tango objects
     (device properties, attirbutes and commands).
@@ -149,6 +170,7 @@ class BaseTangoDocumenter(ClassLevelDocumenter):
         ClassLevelDocumenter.add_content(self, more_content, True)
         
 
+# Tango property documenter
 class TangoPropertyDocumenter(BaseTangoDocumenter):
     objtype = 'tangoproperty'
     directivetype = 'attribute'
@@ -157,6 +179,7 @@ class TangoPropertyDocumenter(BaseTangoDocumenter):
     member_order = 70
 
 
+# Tango attribute documenter
 class TangoAttributeDocumenter(BaseTangoDocumenter):
     objtype = 'tangoattribute'
     directivetype = 'attribute'
@@ -164,6 +187,8 @@ class TangoAttributeDocumenter(BaseTangoDocumenter):
     mocktype = attribute
     member_order = 80
 
+
+# Tango command documenter
 class TangoCommandDocumenter(BaseTangoDocumenter):
     objtype = 'tangocommand'
     directivetype = 'attribute'
@@ -175,9 +200,9 @@ class TangoCommandDocumenter(BaseTangoDocumenter):
 # Setup the sphinx extension
 def setup(app):
     """Sphinx extension setup function."""
-    from sphinx.application import Sphinx
-    if not isinstance(app, Sphinx):
+    if not isinstance(app, Sphinx): 
         return
+    pytango_patch()
     app.add_autodocumenter(TangoDeviceDocumenter)
     app.add_autodocumenter(TangoAttributeDocumenter)
     app.add_autodocumenter(TangoPropertyDocumenter)

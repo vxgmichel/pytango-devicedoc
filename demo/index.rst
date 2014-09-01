@@ -1,0 +1,3 @@
+.. automodule:: powersupply
+    :members: PowerSupply
+
