@@ -27,7 +27,7 @@ In both cases:
 
 ## Demo
 
-This repository contains a simple demo of the tangodoc extension.
+This repository contains a simple demo of the devicedoc extension.
 In order to build the documentation, use the 'demo/build_doc' script.
 Then take a look at:
 
@@ -38,7 +38,7 @@ Then take a look at:
 
 ## Warning
 
-This extension is not as flexible as I want it to be (yet).
+This extension is still not as flexible as I want it to be.
 It allows you to use special directive as:
 
 - autotangodevice
@@ -47,11 +47,11 @@ It allows you to use special directive as:
 - autotangocommand
 
 These haven't been completely tested and are not guaranteed to work.
-The safest use is to stick to the automodule directive as written in the demo.
+The safest usage is to stick to the automodule directive as written in the demo.
 
 ## Improvements
 
-The use of header and sections is probably the less flexible part of the code.
+The use of headers and sections is probably the less flexible part of the code.
 Eventually, it should be handled via directive options.
 
 ## Contributors
