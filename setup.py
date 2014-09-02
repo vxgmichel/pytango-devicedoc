@@ -2,9 +2,9 @@
 
 from setuptools import setup
 
-setup(name = "python-posproperty",
+setup(name = "python-devicedoc",
       version = "0.1.0",
-      description = "Sphinx extension for Tango devices documentation generation.",
-      packages = ['tangodoc'],
+      description = "Sphinx extension for Tango devices documentation.",
+      packages = ['devicedoc'],
       include_package_data=True,
      )

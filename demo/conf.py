@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('.'))
 
 # Configuration
-extensions = ['sphinx.ext.autodoc', 'tangodoc']
+extensions = ['sphinx.ext.autodoc', 'devicedoc']
 master_doc = 'index'
 
 # Data
