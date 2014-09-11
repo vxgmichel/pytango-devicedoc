@@ -108,25 +108,25 @@ class TangoDeviceDocumenter(ClassDocumenter):
         if all_members:
             self.options.member_order = 'groupwise'
             self.env.config.autodevice = True
-            BaseTangoDocumenter.reset()
+            TangoItemDocumenter.reset()
         ClassDocumenter.document_members(self, all_members)
 
 
-# Tango base documenter
-class BaseTangoDocumenter(ClassLevelDocumenter):
+# Tango item documenter
+class TangoItemDocumenter(ClassLevelDocumenter):
     """Base class for documenting tango objects
     (device properties, attirbutes and commands).
     """
-    objtype = 'basetango'
+    objtype = 'tangoitem'
     directivetype = 'attribute'
-    mocktype = None
-    priority = AttributeDocumenter.priority
-    priority += 1
+    member_order = -1
+    types = [device_property, attribute, command]
+    priority = AttributeDocumenter.priority + 1
     started = defaultdict(bool)
 
     @classmethod
     def can_document_member(cls, member, membername, isattr, parent):
-        return isinstance(member, cls.mocktype)
+        return any(isinstance(member, mocktype) for mocktype in cls.types)
 
     @classmethod
     def reset(cls):
@@ -171,29 +171,30 @@ class BaseTangoDocumenter(ClassLevelDocumenter):
         
 
 # Tango property documenter
-class TangoPropertyDocumenter(BaseTangoDocumenter):
+class TangoPropertyDocumenter(TangoItemDocumenter):
+    priority = TangoItemDocumenter.priority + 1
     objtype = 'tangoproperty'
-    directivetype = 'attribute'
     section = "Device properties"
-    mocktype = device_property
+    types = [device_property]
     member_order = 70
+    
 
 
 # Tango attribute documenter
-class TangoAttributeDocumenter(BaseTangoDocumenter):
+class TangoAttributeDocumenter(TangoItemDocumenter):
+    priority = TangoItemDocumenter.priority + 1
     objtype = 'tangoattribute'
-    directivetype = 'attribute'
     section = "Attributes"
-    mocktype = attribute
+    types = [attribute]
     member_order = 80
 
 
 # Tango command documenter
-class TangoCommandDocumenter(BaseTangoDocumenter):
+class TangoCommandDocumenter(TangoItemDocumenter):
+    priority = TangoItemDocumenter.priority + 1
     objtype = 'tangocommand'
-    directivetype = 'attribute'
     section = "Commands"
-    mocktype = command
+    types = [command]
     member_order = 90
 
     
@@ -207,3 +208,4 @@ def setup(app):
     app.add_autodocumenter(TangoAttributeDocumenter)
     app.add_autodocumenter(TangoPropertyDocumenter)
     app.add_autodocumenter(TangoCommandDocumenter)
+    app.add_autodocumenter(TangoItemDocumenter)

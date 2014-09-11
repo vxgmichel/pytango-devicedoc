@@ -34,18 +34,51 @@ Then take a look at:
 - The 'demo/index.rst' reStructuredText file. Contains the directive to generate the documentation.
 - The generated documentation: 'demo/build/index.html'
 
-## Warning
+## Syntax
 
-This extension is still not as flexible as I want it to be.
-It allows you to use special directive as:
+This extension contains the following sphinx directives:
 
 - autotangodevice
+- autotangoitem
 - autotangoattribute
 - autotangoproperty
 - autotangocommand
 
-These haven't been completely tested and are not guaranteed to work.
-The safest usage is to stick to the automodule directive as written in the demo.
+In particular, the autotangoitem directive is pretty useful to customize the documentation:
+
+    My Documentation
+    ================
+
+    .. automodule:: mymodule
+
+    .. autoclass:: MyDevice
+
+    Custom Title
+    ############
+
+    Another custom title
+    --------------------
+
+    .. autotangoitem:: MyDevice.SomeProperty
+
+    .. autotangoitem:: MyDevice.someAttribute
+
+    .. autotangoitem:: MyDevice.SomeCommand
+
+However, the simplest usage for a complete and fully automated documentation is:
+
+    .. automodule:: mymodule
+        :members: MyDevice
+
+## Warning
+
+The above syntax is currently the only way to generate the full documentation 
+using automatic headers and titles.
+
+For instance, this syntax will get rid of every title:
+
+    .. autotangodevice:: mymodule.MyDevice
+        :members: 
 
 ## Improvements
 
