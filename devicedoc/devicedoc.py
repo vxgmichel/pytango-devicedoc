@@ -2,6 +2,7 @@
 from a HLAPI Tango Device class."""
 
 # Imports
+from mock import Mock
 from sphinx.application import Sphinx
 from sphinx.ext.autodoc import ClassDocumenter, AttributeDocumenter 
 from sphinx.ext.autodoc import ClassLevelDocumenter
@@ -22,22 +23,32 @@ class BaseMock(object):
         self.func_doc = func.__doc__
         return self
 
+    def setter(self, func):
+        """Decorator support."""
+        return self
+
+    def deleter(self, func):
+        """Decorator support."""
+        return self
+
     def __repr__(self):
         """Generate a readable representation."""
         args = []
         # Add type
         name = type(self).__name__.replace('_',' ')
-        base = "{}(".format(name.capitalize())
+        base = "{}:\n".format(name.capitalize())
         # Add kwargs
         for key, value in sorted(self.kwargs.items()):
+            if key in ["doc", "fget", "fset", "fisallowed"]:
+                continue
             if value == "":
                 value = "None"
-            args.append("{} = {}".format(key, value))
-        if len(args) > 1:
-            sep = ',\n' + ' ' * len(base)
-        else:
-            sep = ''
-        return base + sep[1:] + sep.join(args) + ')'
+            try:
+                value = value.__name__
+            except AttributeError:
+                pass
+            args.append("    - {0} : {1}".format(key, value))
+        return base + '\n'.join(args)
 
     def get_doc(self):
         """Get the documentation from the object."""
