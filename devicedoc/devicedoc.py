@@ -16,7 +16,6 @@ class BaseMock(object):
         """Save kwargs and function documentation."""
         self.kwargs = kwargs
         self.func_doc = func.__doc__ if func else None
-        self.__tango_command__ = True
 
     def __call__(self, func):
         """Decorator support."""
@@ -70,7 +69,7 @@ class attribute(BaseMock):
 
 
 class command(BaseMock):
-    pass
+    __tango_command__ = True
 
 
 class DeviceMeta(type):
