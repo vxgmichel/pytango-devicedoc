@@ -70,6 +70,7 @@ class attribute(BaseMock):
 
 class command(BaseMock):
     __tango_command__ = True
+    __name__ = "tango_command"
 
 
 class DeviceMeta(type):
