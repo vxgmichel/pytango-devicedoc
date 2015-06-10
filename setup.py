@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name = "python-devicedoc",
-      version = "0.1.1",
+      version = "0.1.2",
       description = "Sphinx extension for Tango devices documentation.",
       packages = ['devicedoc'],
       include_package_data=True,
