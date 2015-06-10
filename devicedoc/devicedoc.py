@@ -84,12 +84,12 @@ class Device(object):
 
 # Monkey patching
 def pytango_patch():
-    import PyTango
-    PyTango.server.attribute = attribute
-    PyTango.server.command = command
-    PyTango.server.device_property = device_property
-    PyTango.server.Device = Device
-    PyTango.server.DeviceMeta = DeviceMeta
+    from PyTango import server
+    server.attribute = attribute
+    server.command = command
+    server.device_property = device_property
+    server.Device = Device
+    server.DeviceMeta = DeviceMeta
 
 
 # Reload object
