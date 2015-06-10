@@ -61,24 +61,33 @@ class BaseMock(object):
 
 # Tango mock
 
-class device_property(BaseMock):
+class class_property(BaseMock):
+    """Mock for class property."""
     pass
 
 
+class device_property(BaseMock):
+    """Mock for device property."""
+
+
 class attribute(BaseMock):
+    """Mock for TANGO attribute."""
     pass
 
 
 class command(BaseMock):
+    """Mock for TANGO command."""
     __tango_command__ = True
     __name__ = "tango_command"
 
 
 class DeviceMeta(type):
+    """Mock for device metaclass."""
     pass
 
 
 class Device(object):
+    """Mock for device class."""
     __metaclass__ = DeviceMeta
 
 
@@ -88,6 +97,7 @@ def pytango_patch():
     server.attribute = attribute
     server.command = command
     server.device_property = device_property
+    server.class_property = class_property
     server.Device = Device
     server.DeviceMeta = DeviceMeta
 
@@ -108,7 +118,7 @@ class TangoDeviceDocumenter(ClassDocumenter):
     objtype = 'tangodevice'
     directivetype = 'class'
     section = "{0} Device Documentation"
-    valid_types = (attribute, device_property, command)
+    valid_types = (attribute, class_property, device_property, command)
     priority = ClassDocumenter.priority
     priority += 1
 
@@ -161,7 +171,7 @@ class TangoItemDocumenter(ClassLevelDocumenter):
     objtype = 'tangoitem'
     directivetype = 'attribute'
     member_order = -1
-    types = [device_property, attribute, command]
+    types = [class_property, device_property, attribute, command]
     priority = AttributeDocumenter.priority + 1
     started = defaultdict(bool)
 
@@ -222,6 +232,15 @@ class TangoItemDocumenter(ClassLevelDocumenter):
         ClassLevelDocumenter.add_content(self, more_content, True)
 
 
+# Tango class property documenter
+class TangoClassPropertyDocumenter(TangoItemDocumenter):
+    priority = TangoItemDocumenter.priority + 1
+    objtype = 'tangoclassproperty'
+    section = "Class properties"
+    types = [class_property]
+    member_order = 60
+
+
 # Tango property documenter
 class TangoPropertyDocumenter(TangoItemDocumenter):
     priority = TangoItemDocumenter.priority + 1
@@ -258,5 +277,6 @@ def setup(app):
     app.add_autodocumenter(TangoDeviceDocumenter)
     app.add_autodocumenter(TangoAttributeDocumenter)
     app.add_autodocumenter(TangoPropertyDocumenter)
+    app.add_autodocumenter(TangoClassPropertyDocumenter)
     app.add_autodocumenter(TangoCommandDocumenter)
     app.add_autodocumenter(TangoItemDocumenter)
