@@ -2,6 +2,7 @@
 from a HLAPI Tango Device class."""
 
 # Imports
+from importlib import import_module
 from sphinx.application import Sphinx
 from sphinx.ext.autodoc import ClassDocumenter, AttributeDocumenter
 from sphinx.ext.autodoc import ClassLevelDocumenter
@@ -83,12 +84,22 @@ class Device(object):
 
 # Monkey patching
 def pytango_patch():
-    from PyTango import server
-    server.attribute = attribute
-    server.command = command
-    server.device_property = device_property
-    server.Device = Device
-    server.DeviceMeta = DeviceMeta
+    import PyTango
+    PyTango.server.attribute = attribute
+    PyTango.server.command = command
+    PyTango.server.device_property = device_property
+    PyTango.server.Device = Device
+    PyTango.server.DeviceMeta = DeviceMeta
+
+
+# Reload object
+def reload_object(obj):
+    """Reload an object if possible"""
+    try:
+        module = reload(import_module(obj.__module__))
+        return getattr(module, obj.__name__)
+    except:
+        return obj
 
 
 # Tango device documenter
@@ -101,8 +112,13 @@ class TangoDeviceDocumenter(ClassDocumenter):
     priority = ClassDocumenter.priority
     priority += 1
 
+    def import_object(self):
+        reload(import_module(self.modname))
+        return ClassDocumenter.import_object(self)
+
     @classmethod
     def can_document_member(cls, member, membername, isattr, parent):
+        member = reload_object(member)
         return isinstance(member, DeviceMeta)
 
     def generate(self, more_content=None, real_modname=None,
@@ -156,6 +172,17 @@ class TangoItemDocumenter(ClassLevelDocumenter):
     @classmethod
     def reset(cls):
         cls.started.clear()
+
+    def import_object(self):
+        """Load an object."""
+        # Get the object
+        if not ClassLevelDocumenter.import_object(self):
+            return False
+        # Reload modules
+        self.parent = reload_object(self.parent)
+        reload(import_module(self.modname))
+        # Get the new object
+        return ClassLevelDocumenter.import_object(self)
 
     def generate(self, more_content=None, real_modname=None,
                  check_module=False, all_members=False):
