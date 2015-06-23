@@ -105,6 +105,8 @@ def pytango_patch():
 # Reload object
 def reload_object(obj):
     """Reload an object if possible"""
+    if not isinstance(obj, type):
+        return obj
     try:
         module = reload(import_module(obj.__module__))
         return getattr(module, obj.__name__)
