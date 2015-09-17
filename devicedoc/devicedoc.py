@@ -3,6 +3,7 @@ from a HLAPI Tango Device class."""
 
 # Imports
 from importlib import import_module
+from sphinx.util import force_decode
 from sphinx.application import Sphinx
 from sphinx.ext.autodoc import ClassDocumenter, AttributeDocumenter
 from sphinx.ext.autodoc import ClassLevelDocumenter
@@ -52,11 +53,10 @@ class BaseMock(object):
             return base[:-2] + '.'
         return base + '\n'.join(args)
 
-    def get_doc(self):
+    def get_doc(self, encoding=None):
         """Get the documentation from the object."""
-        if self.func_doc:
-            return self.func_doc
-        return self.kwargs.get('doc', '')
+        doc = self.func_doc if self.func_doc else self.kwargs.get('doc', '')
+        return force_decode(doc, encoding)
 
 
 # Tango mock
@@ -222,13 +222,14 @@ class TangoItemDocumenter(ClassLevelDocumenter):
         NL = '\n'
         MU = ' |'
         obj_repr = repr(self.object).replace(NL, NL+MU) + NL
-        obj_doc = self.object.get_doc() + NL
+        obj_doc = self.object.get_doc(encoding) + NL
         return [obj_repr.split(NL), obj_doc.split(NL)]
 
     def add_content(self, more_content, no_docstring=False):
         """Patch to add the documentation from the mock object
         before any other documentation."""
-        docstrings = self.get_doc()
+        encoding = self.analyzer and self.analyzer.encoding
+        docstrings = self.get_doc(encoding)
         for i, line in enumerate(self.process_doc(docstrings)):
             self.add_line(line, '<autodoc>', i)
         ClassLevelDocumenter.add_content(self, more_content, True)
