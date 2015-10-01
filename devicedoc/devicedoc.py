@@ -55,7 +55,7 @@ class BaseMock(object):
 
     def get_doc(self, encoding=None):
         """Get the documentation from the object."""
-        doc = self.func_doc if self.func_doc else self.kwargs.get('doc', '')
+        doc = self.func_doc or self.kwargs.get('doc') or ''
         return force_decode(doc, encoding)
 
 
