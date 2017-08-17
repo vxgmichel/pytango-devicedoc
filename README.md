@@ -1,25 +1,30 @@
+PyTango DeviceDoc plugin for Sphinx
+===================================
+
 ## Synopsis
 
 Sphinx extension for Tango devices documentation.
 Not compatible with POGO generated code, use HLAPI instead.
 
-## Requirement
+## Requirements
 
 - Sphinx
 - PyTango 8.1.2
 
 ## Installation
 
-Two possibilities:
+Three possibilities:
 
-- Run python setup.py install
+- Run `python setup.py install`
+
+- Run `pip install git+https://github.com/vxgmichel/pytango-devicedoc.git`
 
 Or:
 
 - Copy the 'tangodoc/tangodoc.py' file anywhere you want.
 - Make sure that it will be accessible using the python path.
 
-In both cases:
+In all cases:
 
 - Append 'tangodoc' to the extensions list in your sphinx configuration file.
 
@@ -29,22 +34,25 @@ This repository contains a simple demo of the devicedoc extension.
 In order to build the documentation, use the 'demo/build_doc' script.
 Then take a look at:
 
-- The 'demo/powersupply.py' module. Example of documented HLAPI Device class. 
-- The 'demo/conf.py' sphinx configuration file. Contains a minimalist configuration.
-- The 'demo/index.rst' reStructuredText file. Contains the directive to generate the documentation.
-- The generated documentation: 'demo/build/index.html'
+- The `demo/powersupply.py` module. Example of documented HLAPI Device class. 
+- The `demo/conf.py` sphinx configuration file. Contains a minimalist
+configuration.
+- The `demo/index.rst` reStructuredText file. Contains the directive to
+generate the documentation.
+- The generated documentation: `demo/build/index.html`
 
 ## Syntax
 
 This extension contains the following sphinx directives:
 
-- autotangodevice
-- autotangoitem
-- autotangoattribute
-- autotangoproperty
-- autotangocommand
+- `autotangodevice`
+- `autotangoitem`
+- `autotangoattribute`
+- `autotangoproperty`
+- `autotangocommand`
 
-In particular, the autotangoitem directive is pretty useful to customize the documentation:
+In particular, the `autotangoitem` directive is pretty useful to customize
+the documentation:
 
     My Documentation
     ================

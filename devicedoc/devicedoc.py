@@ -72,7 +72,8 @@ class device_property(BaseMock):
 
 class attribute(BaseMock):
     """Mock for TANGO attribute."""
-    pass
+    def write(self, method):
+        pass
 
 
 class command(BaseMock):
@@ -89,6 +90,9 @@ class DeviceMeta(type):
 class Device(object):
     """Mock for device class."""
     __metaclass__ = DeviceMeta
+
+    def run_server(self, cls):
+        pass
 
 
 # Monkey patching
